@@ -38,12 +38,13 @@ async def start_command(message: Message):
 @dp.message()
 async def keyword_handler(message: Message):
     KEYWORDS = get_keywords_from_google_sheet()
-    # Проверяем наличие ключевых слов
-    message_words = set(message.text.lower().split())
-    if any(keyword in message_words for keyword in KEYWORDS):
+    message_text = message.text.lower()
+    found_keywords = [keyword for keyword in KEYWORDS if keyword in message_text]
+
+    if found_keywords:
         await bot.send_message(
             ADMIN_ID,
-            f"Найдено сообщение с ключевым словом:\n{message.text}"
+            f"Найдено сообщение с ключевыми словами:\n{message.text}"
         )
 
 async def main():
