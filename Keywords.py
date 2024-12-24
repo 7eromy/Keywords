@@ -22,7 +22,7 @@ credentials = {
 def get_keywords_from_google_sheet():
     try:
         gc = gspread.service_account_from_dict(credentials)
-        sheet = gc.open_by_url("https://docs.google.com/spreadsheets/d/1JU6OYcW0qSLO5QHIrzy_FfFqoiKcwGshjuuY3tanQDE/edit?gid=0")
+        sheet = gc.open_by_url("https://docs.google.com/spreadsheets/d/1JU6OYcW0qSLO5QHIrzy_FfFqoiKcwGshjuuY3tanQDE/edit?gid=0#gid=0")
         worksheet = sheet.get_worksheet(0)
         keywords = worksheet.col_values(1)
         return [keyword.strip().lower() for keyword in keywords if keyword.strip()]
@@ -30,11 +30,20 @@ def get_keywords_from_google_sheet():
         logging.error(f"Ошибка при получении ключевых слов из Google таблицы: {e}")
         return []
 
-# Обработчик сообщений с текстом
-@dp.message(Command("start"))
-async def start_command(message: Message):
-    await message.reply("Бот запущен и отслеживает ключевые слова.")
 
+# Функция для записи сообщения в Google таблицу
+def write_message_to_google_sheet(message_text):
+    try:
+        gc = gspread.service_account_from_dict(credentials)
+        sheet = gc.open_by_url(
+            "https://docs.google.com/spreadsheets/d/1JU6OYcW0qSLO5QHIrzy_FfFqoiKcwGshjuuY3tanQDE/edit?gid=0")
+        worksheet = sheet.get_worksheet(1)
+        worksheet.append_row([message_text])
+    except Exception as e:
+        logging.error(f"Ошибка при записи сообщения в Google таблицу: {e}")
+
+
+# Обработчик сообщений в группе
 @dp.message()
 async def keyword_handler(message: Message):
     KEYWORDS = get_keywords_from_google_sheet()
@@ -42,11 +51,11 @@ async def keyword_handler(message: Message):
     found_keywords = [keyword for keyword in KEYWORDS if keyword in message_text]
 
     if found_keywords:
+        write_message_to_google_sheet(message.text)
         await bot.send_message(
             ADMIN_ID,
             f"Найдено сообщение с ключевыми словами:\n{message.text}"
         )
-
 async def main():
     await dp.start_polling(bot)
 
