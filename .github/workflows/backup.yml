@@ -22,7 +22,7 @@ jobs:
 
       - name: Clone the backup repository
         run: |
-          git clone https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/<your-username>/repo1.git backup-repo
+          git clone https://github.com/7eromy/backup-repo.git backup-repo
         working-directory: .
 
       - name: Copy files to backup repository
