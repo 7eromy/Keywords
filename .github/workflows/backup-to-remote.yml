@@ -5,7 +5,7 @@ on:
     - cron: '0 0 * * *'  # Запуск каждый день в полночь (UTC)
   push:
     branches:
-      - main  # Триггер на изменения в главной ветке
+      - master  # Триггер на изменения в главной ветке
 
 jobs:
   backup:
@@ -33,5 +33,5 @@ jobs:
             echo "No changes to commit";
           else
             git commit -m "Backup to another account on $(date)"
-            git push origin main
+            git push origin master
           fi
