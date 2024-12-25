@@ -1,4 +1,4 @@
-name: Backup Repository Daily
+name: Daily Backup
 
 on:
   schedule:
