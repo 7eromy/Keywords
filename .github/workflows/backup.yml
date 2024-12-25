@@ -2,10 +2,10 @@ name: Daily Backup
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Запуск каждый день в полночь (UTC)
+    - cron: '0 0 * * *'  # Runs daily at midnight (UTC)
   push:
     branches:
-      - main  # Триггер на изменения в главной ветке
+      - main  # Trigger on changes to the main branch
 
 jobs:
   backup:
@@ -19,19 +19,18 @@ jobs:
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          
-      - name: Create backup-repo folder if not exists
-        run: mkdir -p backup-repo
 
       - name: Clone the backup repository
         run: |
           git clone https://github.com/7eromy/backup-repo.git backup-repo
-        working-directory: .
+        env:
+          GIT_ASKPASS: /dev/null
+          GIT_TERMINAL_PROMPT: 0
+          GITHUB_TOKEN: ${{ secrets.ZEROMY_TOKEN }}
 
       - name: Copy files to backup repository
         run: |
           rsync -av --exclude=.git ./ ./backup-repo/
-        working-directory: .
 
       - name: Commit and push changes
         run: |
@@ -41,13 +40,5 @@ jobs:
             echo "No changes to commit";
           else
             git commit -m "Backup on $(date)"
-            git push origin main
+            git push https://x-access-token:${{ secrets.ZEROMY_TOKEN }}@github.com/7eromy/backup-repo.git main
           fi
-        working-directory: ./backup-repo
-
-      - name: Debug workspace
-        run: |
-          echo "Workspace files:"
-          ls -R
-          echo "Backup folder contents:"
-          ls -R backup-repo
