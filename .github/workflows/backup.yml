@@ -2,7 +2,10 @@ name: Daily Backup
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 0 * * *'  # Запуск каждый день в полночь (UTC)
+  push:
+    branches:
+      - main  # Триггер на изменения в главной ветке
 
 jobs:
   backup:
