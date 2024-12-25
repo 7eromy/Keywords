@@ -42,3 +42,9 @@ jobs:
             git commit -m "Backup on $(date)"
             git push https://x-access-token:${{ secrets.ZEROMY_TOKEN }}@github.com/7eromy/backup-repo.git main
           fi
+      - name: Debug workspace
+        run: |
+            echo "Workspace files:"
+            ls -lah
+            echo "Backup folder contents before copying:"
+            ls -lah backup-repo/
