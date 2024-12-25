@@ -3,9 +3,6 @@ name: Backup Repository Daily
 on:
   schedule:
     - cron: '0 0 * * *'  # Запуск каждый день в полночь (UTC)
-  push:
-    branches:
-      - main  # Триггер на изменения в главной ветке
 
 jobs:
   backup:
@@ -20,10 +17,13 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
 
+      - name: Create backup-repo folder if not exists
+        run: mkdir -p backup-repo
+
       - name: Clone the backup repository
         run: |
-          git clone https://github.com/7eromy/backup-repo.git backup-repo
-        working-directory: ./backup-repo
+          git clone https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/<your-username>/repo1.git backup-repo
+        working-directory: .
 
       - name: Copy files to backup repository
         run: |
@@ -34,6 +34,6 @@ jobs:
         run: |
           cd backup-repo
           git add .
-          git commit -m "Backup on $(date)"
+          git commit -m "Backup on $(date)" || echo "No changes to commit"
           git push origin main
         working-directory: ./backup-repo
