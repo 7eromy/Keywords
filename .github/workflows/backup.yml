@@ -36,5 +36,5 @@ jobs:
             exit 0
           else
             git commit -m "Backup on $(date)"
-            git push https:/github.com/7eromy/backup-repo.git main
+            git push https://x-access-token:${{ secrets.ZEROMY_TOKEN }}@github.com/7eromy/backup-repo.git main
           fi
